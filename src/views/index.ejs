@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!-- html5 -->
+<html lang- "en">
+<head>
+    <meta http-equiv="x-ua-compatible" content="IE=Edge" />
+    <!-- inject:css-->
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- endinject-->
+    <!--bower:css-->
+    <link rel="stylesheet" href="/lib/angular-material/angular-material.css" />
+    <!--endbower-->
+    <!-- bower:js -->
+    <script src="/lib/angular/angular.js"></script>
+    <script src="/lib/angular-animate/angular-animate.js"></script>
+    <script src="/lib/angular-aria/angular-aria.js"></script>
+    <script src="/lib/angular-messages/angular-messages.js"></script>
+    <script src="/lib/angular-material/angular-material.js"></script>
+    <script src="/lib/moment/moment.js"></script>
+    <!-- endbower -->
+
+    <!--inject:js-->
+    <script src="/js/app.js"></script>
+    <!--endinject-->
+    <!--[if lt IE 9]>
+			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+    <meta charset="UTF-8">
+    <title>Image Extract Utility</title>
+</head>
+
+<body ng-app="myApp">
+    <div ng-controller="MainController">
+        <md-toolbar>
+            <span layout-margin layout-padding>Image Extract Utility</span>
+        </md-toolbar>
+        <div>
+            <div class="mainContent">
+                <md-tabs md-dynamic-height md-border-bottom>
+                    <md-tab label="Search By Nino">
+                        <md-content class="md-padding">
+                            <input id="nino" ng-change="picked=null" type="text" ng-model="nino">
+                            <md-button ng-show="nino" ng-click="getPagedResults('getByNino',nino)" class="md-raised md-primary">Get Results</md-button>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Search By Surname">
+                        <md-content class="md-padding">
+                            <input id="surname" ng-change="picked=null" type="text" ng-model="surname">
+                            <md-button ng-show="surname" ng-click="getPagedResults('getBySurname',surname)" class="md-raised md-primary">Get Results</md-button>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+                <div ng-hide="picked">
+                    <md-list>
+                        <md-list-item ng-click="pickItem(item)" ng-repeat="item in memberData">
+                            <h2 class="listdata">{{item.images.length+0}}</h2>
+                            <h2 class="listdata">{{item.tiffs.length+0}}</h2>
+                            <div class="listdata">{{item.nino}}</div>
+                            <div class="listdata">{{item.personref1}}</div>
+                            <div class="listdata">{{item.forenames}} {{item.surname}}</div>
+                            <div class="listdata">{{item.paylocation}}</div>
+                        </md-list-item>
+                    </md-list>
+                </div>
+                <div ng-show="picked">
+                    <div class="person">
+                        <div class="label">Nino</div>
+                        <div class="data">{{picked.nino}}</div>
+                        <div class="label">PersonRef1</div>
+                        <div class="data">{{picked.personref1}}</div>
+                        <div class="label">Name </div>
+                        <div class="data">{{picked.forenames}} {{picked.surname}}</div>
+                        <div class="label">Paylocation </div>
+                        <div class="data">{{picked.paylocation}}</div>
+                    </div>
+                    <md-card>
+                        <md-toolbar layout="row" class="md-hue-3">
+                            <div class="md-toolbar-tools">
+                                <span>Images</span>
+                            </div>
+                        </md-toolbar>
+                        <md-content style="height: 500px;" class="imageBox">
+                            <section ng-show="images.length > 0">
+                                <md-subheader class="md-primary"> Calculations</md-subheader>
+                                <md-list flex>
+                                    <md-list-item class="md-3-line" ng-click="getImage(image)" ng-repeat="image in images | orderBy : '-File'">
+                                        <img ng-src="/images/settings_ethernet_black_54x54.png" class="md-avatar" />
+                                        <div class="md-list-item-text" layout="column">
+                                            <h3>{{ getNiceDate(image.docdate) }}</h3>
+                                            <h4>{{ image.CalcName }}</h4>
+                                        </div>
+                                        <md-divider></md-divider>
+                                    </md-list-item>
+                                </md-list>
+                            </section>
+                            <section ng-show="tiffs.length > 0">
+                                <md-subheader class="md-primary">None Calcs</md-subheader>
+                                <md-list flex>
+                                    <md-list-item class="md-3-line" ng-click="getTiff(tiff)" ng-repeat="tiff in tiffs | orderBy : '-docNo'">
+                                        <img ng-src="{{getImageUrl(tiff)}}" class="md-avatar" />
+                                        <div class="md-list-item-text" layout="column">
+                                            <h3>{{getNiceDate(tiff.docDate)}}</h3>
+                                            <h4>{{tiff.docDesc}}</h4>
+                                            <p> {{tiff.docCategory}}</p>
+                                            <p ng-if="tiff.pageNo">Page {{tiff.pageNo}}</p>
+                                        </div>
+                                        <md-divider></md-divider>
+                                    </md-list-item>
+                                </md-list>
+                            </section>
+                    </md-card>
+                </div>
+
+            </div>
+        </div>
+        <div layout="row" ng-hide="picked" flex="100">
+            <md-button type="button" layout="row" layout-align="end end" ng-show="currentpage>0" ng-click="getPrevPage()" ng-disabled="!(currentpage>1)"
+                value="get prev">
+                <<</md-button>
+                    <md-button type="button" layout="row" layout-align="end end" ng-click="getNextPage()" ng-show="currentpage>0" value="get next">>></md-button>
+        </div>
+    </div>
+</body>
+
+</html>
